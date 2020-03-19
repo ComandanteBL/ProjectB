@@ -1,5 +1,6 @@
 import time
 import threading
+import pandas as pd
 from selenium import webdriver
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.common.exceptions import NoSuchElementException
@@ -69,6 +70,8 @@ class Browser:
             return None
 
     def get_historical_data(self, symbol):
+        # returning DataFrame
+
         thread = threading.Thread(target=self.__loaded, args=[symbol])
         thread.start()  # starting thread
         thread.join()  # waiting on thread to finish and continue
@@ -89,12 +92,7 @@ class Browser:
 
             # get link to execute
             download_link = self.driver.find_element_by_xpath(".//a[contains(@href,'download')]").get_attribute('href')
-
-            match = re.search('EPS \(TTM\) (.*)\n', all_text)
-            if match:
-                eps_ttm = float(match.group(1))
-                return eps_ttm
-            else:
-                return None
+            csv = pd.read_csv(download_link)
+            return csv
         except NotImplementedError:
             return None
