@@ -7,7 +7,8 @@ import re
 
 
 class Browser:
-    driver = webdriver.Chrome('../driver/chromedriver_80.exe')  # Optional argument, if not specified will search path.
+    # driver chrome version 80
+    driver = webdriver.Chrome('../driver/chromedriver.exe')  # Optional argument, if not specified will search path.
 
     def __init__(self):
         self.url = 'https://finance.yahoo.com/'
@@ -58,6 +59,37 @@ class Browser:
         try:
             WebDriverWait(self.driver, 10).until(lambda x: x.find_element_by_id("quote-header"))  # wait for load
             all_text = self.driver.find_element_by_id("quote-header").text  # get element
+            match = re.search('EPS \(TTM\) (.*)\n', all_text)
+            if match:
+                eps_ttm = float(match.group(1))
+                return eps_ttm
+            else:
+                return None
+        except NotImplementedError:
+            return None
+
+    def get_historical_data(self, symbol):
+        thread = threading.Thread(target=self.__loaded, args=[symbol])
+        thread.start()  # starting thread
+        thread.join()  # waiting on thread to finish and continue
+        try:
+            WebDriverWait(self.driver, 10).until(
+                lambda x: x.find_element_by_id("quote-header"))  # wait for quote header
+            self.driver.find_element_by_css_selector("li[data-test='HISTORICAL_DATA']").click()  # click on hist data
+
+            WebDriverWait(self.driver, 10).until(
+                lambda x: x.find_element_by_css_selector("svg[data-icon='CoreArrowDown']"))  # wait for arrow appear
+            self.driver.find_element_by_css_selector("svg[data-icon='CoreArrowDown']").click()  # click on arrow
+
+            WebDriverWait(self.driver, 10).until(
+                lambda x: x.find_element_by_css_selector("button[data-value='MAX']"))  # wait for max to appear
+            self.driver.find_element_by_css_selector("button[data-value='MAX']").click()  # click on max
+
+            self.driver.find_element_by_xpath("//span[.='Apply']").click()  # click on apply button
+
+            # get link to execute
+            download_link = self.driver.find_element_by_xpath(".//a[contains(@href,'download')]").get_attribute('href')
+
             match = re.search('EPS \(TTM\) (.*)\n', all_text)
             if match:
                 eps_ttm = float(match.group(1))
