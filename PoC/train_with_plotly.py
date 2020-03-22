@@ -89,7 +89,6 @@ valid = data[training_data_len:]
 valid['Predictions'] = predictions
 # visualize the data
 
-
 fig = go.Figure()
 
 fig.add_trace(go.Scatter(x=train.index, y=train.Close, mode='lines', name='Istorijski podaci'))
@@ -100,12 +99,3 @@ fig.update_layout(title='Model and predictions',
                   xaxis_title='Time',
                   yaxis_title='Price in USD ($)')
 fig.show()
-
-# plt.figure(figsize=(16, 8))
-# plt.title('Model')
-# plt.xlabel('Date', fontsize=18)
-# plt.ylabel('Close Price USD ($)', fontsize=18)
-# plt.plot(train['Close'])
-# plt.plot(valid[['Close', 'Predictions']])
-# plt.legend(['Istorijski podaci', 'Stvarne vrijednost', 'Predvidjanje modela'], loc='lower right')
-# plt.show()
