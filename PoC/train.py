@@ -88,7 +88,7 @@ train = data[:training_data_len]
 valid = data[training_data_len:]
 valid['Predictions'] = predictions
 # visualize the data
-plt.figure(figsize=(25, 8))
+plt.figure(figsize=(16, 8))
 plt.title('Model')
 plt.xlabel('Date', fontsize=18)
 plt.ylabel('Close Price USD ($)', fontsize=18)
