@@ -86,7 +86,7 @@ rmse = np.sqrt(np.mean(predictions - y_test) ** 2)
 # plot the data
 train = data[:training_data_len]
 valid = data[training_data_len:]
-valid['Predictions'] = predictions
+valid['predictions'] = predictions
 # visualize the data
 
 fig = go.Figure()

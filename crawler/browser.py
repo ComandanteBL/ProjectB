@@ -8,8 +8,8 @@ import re
 
 
 class Browser:
-    # Driver chrome version 80
-    driver = webdriver.Chrome('../Driver/chromedriver.exe')  # Optional argument, if not specified will search path.
+    # driver chrome version 80
+    driver = webdriver.Chrome('../driver/chromedriver.exe')  # Optional argument, if not specified will search path.
 
     def __init__(self):
         self.url = 'https://finance.yahoo.com/'

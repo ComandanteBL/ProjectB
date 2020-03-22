@@ -86,13 +86,13 @@ rmse = np.sqrt(np.mean(predictions - y_test) ** 2)
 # plot the data
 train = data[:training_data_len]
 valid = data[training_data_len:]
-valid['Predictions'] = predictions
+valid['predictions'] = predictions
 # visualize the data
 plt.figure(figsize=(16, 8))
 plt.title('Model')
 plt.xlabel('Date', fontsize=18)
 plt.ylabel('Close Price USD ($)', fontsize=18)
 plt.plot(train['Close'])
-plt.plot(valid[['Close', 'Predictions']])
+plt.plot(valid[['Close', 'predictions']])
 plt.legend(['Istorijski podaci', 'Stvarne vrijednost', 'Predvidjanje modela'], loc='lower right')
 plt.show()

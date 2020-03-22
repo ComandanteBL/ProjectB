@@ -1,4 +1,4 @@
-from Crawler.browser import Browser
+from crawler.browser import Browser
 import pandas as pd
 from sqlalchemy import create_engine
 import time
