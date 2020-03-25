@@ -15,7 +15,7 @@ def save_historical_data(csv, s):
 def save_df_to_db(df):
     # df needs to have ['symbol', 'date', 'value', 'unit']
 
-    # new order of columns, dropping NaNs and rounding all int columns to 3 decimal places
+    # new order of columns, dropping NaNs and rounding all number columns to 3 decimal places
     df1 = df[['symbol', 'date', 'value', 'unit']][df['value'].notnull()].round(3)
 
     # save it to database
@@ -35,6 +35,16 @@ def get_stock_data(symbol, start, end, unit):
             "symbol"='{symbol}' AND "date" >= '{start}' AND "date" <= '{end}' AND "unit" = '{unit}'
             ORDER BY "date" ASC
         """, engine)
+    return df
+
+
+def get_entry_for_date(symbol, input_date, unit):
+    df = pd.read_sql_query(
+        f"""
+                SELECT * FROM "hist_data" WHERE
+                "symbol"='{symbol}' AND "date"<='{input_date}' AND "unit" = '{unit}'
+                ORDER BY "date" DESC LIMIT 1
+            """, engine)
     return df
 
 
