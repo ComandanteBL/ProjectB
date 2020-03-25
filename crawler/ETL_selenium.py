@@ -1,43 +1,60 @@
 from crawler.browser import Browser
 import pandas as pd
 from sqlalchemy import create_engine
+from datetime import datetime
 import time
 
 # init browser with yahoo search
+from utils.queries import save_historical_data, save_df_to_db
+
 browser = Browser()
-
-# stock symbols
-
-params = ['BMW.DE', 'AAPL', 'MSFT']
-
 engine = create_engine('postgresql://script:pbscript@localhost:5432/project_b')
 
+stocks = [
+    'MMM',  # 3M
+    'AXP',  # American Express
+    'AAPL',  # Apple Inc.
+    'BA',  # Boeing
+    'CAT',  # Caterpillar Inc.
+    'CVX',  # Chevron Corporation
+    'CSCO',  # Cisco Systems
+    'KO',  # The Coca-Cola Company
+    'DOW',  # Dow Inc.
+    'XOM',  # ExxonMobil
+    'GS',  # Goldman Sachs
+    'HD',  # The Home Depot
+    'IBM',  # IBM
+    'INTC',  # Intel
+    'JNJ',  # Johnson & Johnson
+    'JPM',  # JPMorgan Chase
+    'MCD',  # McDonald's
+    'MRK',  # Merck & Co.
+    'MSFT',  # Microsoft
+    'NKE',  # Nike
+    'PFE',  # Pfizer
+    'PG',  # Procter & Gamble
+    'TRV',  # The Travelers Companies
+    'UNH',  # UnitedHealth Group
+    'UTX',  # United Technologies
+    'VZ',  # Verizon
+    'V',  # Visa Inc.
+    'WMT',  # Walmart
+    'WBA',  # Walgreens Boots Alliance
+    'DIS',  # The Walt Disney Company
+]
 
-def save_historical_data(csv):
-    df = csv[['Date', 'Close']]
-    df = df.rename(columns={"Date": "date", "Close": "value"})  # renaming columns
-    df['symbol'] = pd.Series(p, index=df.index)  # add symbol
-    df['unit'] = pd.Series('price', index=df.index)  # add symbol
-
-    # new order of columns, dropping NaNs and rounding all int columns to 3 decimal places
-    df1 = df[['symbol', 'date', 'value', 'unit']][df['value'].notnull()].round(3)
-
-    # save it to database
-    try:
-        df1.to_sql('data', engine, if_exists='append', index=False)
-    # use the generic Exception, IntegrityError caused trouble
-    except Exception as e:
-        print("FAILURE TO APPEND: {}".format(e))
-
-    return True
-
-
-for p in params:
+for i in range(0, len(stocks)):
     # price = browser.get_stock_price(p)
     # eps = browser.get_eps_ttm(p)
 
-    hist_data = browser.get_historical_data(p)  # csv loaded into data frame
-    save_historical_data(hist_data)
+    eps_ttm = browser.get_eps_ttm(stocks[i])
+    d = {'symbol': [stocks[i]], 'date': [datetime.today().date()], 'value': [eps_ttm], 'unit': ['eps_ttm']}
+    df = pd.DataFrame(data=d)
+    save_df_to_db(df)
+    print(f'saved eps_ttm for: {stocks[i]}')
+    print(f'=========== DONE {i + 1} / {len(stocks)} ===========')
+
+    # save_historical_data(hist_data, s)
 
 print('\U0001F608')
 time.sleep(500)

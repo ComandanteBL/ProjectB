@@ -4,6 +4,30 @@ from sqlalchemy import create_engine
 engine = create_engine('postgresql://script:pbscript@localhost:5432/project_b')
 
 
+def save_historical_data(csv, s):
+    df = csv[['Date', 'Close']]
+    df = df.rename(columns={"Date": "date", "Close": "value"})  # renaming columns
+    df['symbol'] = pd.Series(s, index=df.index)  # add symbol
+    df['unit'] = pd.Series('price', index=df.index)  # add symbol
+    save_df_to_db(df)
+
+
+def save_df_to_db(df):
+    # df needs to have ['symbol', 'date', 'value', 'unit']
+
+    # new order of columns, dropping NaNs and rounding all int columns to 3 decimal places
+    df1 = df[['symbol', 'date', 'value', 'unit']][df['value'].notnull()].round(3)
+
+    # save it to database
+    try:
+        df1.to_sql('hist_data', engine, if_exists='append', index=False)
+    # use the generic Exception, IntegrityError caused trouble
+    except Exception as e:
+        print("FAILURE TO APPEND: {}".format(e))
+
+    return True
+
+
 def get_stock_data(symbol, start, end, unit):
     df = pd.read_sql_query(
         f"""
